@@ -1,4 +1,4 @@
-package com.example.samdaejjang;
+package com.samdaejjang.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
