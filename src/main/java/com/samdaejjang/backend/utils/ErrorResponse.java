@@ -1,11 +1,20 @@
 package com.samdaejjang.backend.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+public class ErrorResponse extends ApiResponse<ErrorResponse.ErrorBody> {
 
-@Data
-@AllArgsConstructor
-public class ErrorResponse {
+    public ErrorResponse(String message) {
+        super(false, new ErrorBody(message));
+    }
 
-    private String message;
+    public static class ErrorBody {
+        private final String message;
+
+        public ErrorBody(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
 }

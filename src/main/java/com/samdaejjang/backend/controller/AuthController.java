@@ -10,20 +10,22 @@ import com.samdaejjang.backend.repository.UserRepository;
 import com.samdaejjang.backend.service.UserService;
 import com.samdaejjang.backend.utils.ApiResponse;
 import com.samdaejjang.backend.utils.ErrorResponse;
+import com.samdaejjang.backend.utils.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -41,29 +43,18 @@ public class AuthController {
         try {
             Users registered = userService.register(signupRequestDto);
 
-            if (registered.getUserId() > 0) {
+            SignupResponseDto signupResponseDto = new SignupResponseDto(
+                    registered.getUserId(),
+                    registered.getUsername(),
+                    registered.getNickname(),
+                    registered.getPhoneNumber()
+            );
 
-                SignupResponseDto signupResponseDto = new SignupResponseDto(
-                        registered.getUserId(),
-                        registered.getUsername(),
-                        registered.getNickname(),
-                        registered.getPhoneNumber()
-                );
-
-                ApiResponse<SignupResponseDto> response = new ApiResponse<>(true, signupResponseDto);
-
-                return ResponseEntity.ok(response);
-            } else {
-                ErrorResponse error = new ErrorResponse("회원 등록 실패");
-                ApiResponse<ErrorResponse> response = new ApiResponse<>(false, error);
-                return ResponseEntity.badRequest().body(response);
-            }
-
-
+            SuccessResponse<SignupResponseDto> response = new SuccessResponse<>(signupResponseDto);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
-            ErrorResponse error = new ErrorResponse(e.getMessage());
-            ApiResponse<ErrorResponse> response = new ApiResponse<>(false, error);
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
         }
     }
 
@@ -86,11 +77,12 @@ public class AuthController {
 
             String jwt = jwtTokenProvider.createToken(authentication.getName());
 
-            LoginResponseDto loginResponseDto = new LoginResponseDto(jwt, user.getUserId(), user.getUsername(), user.getNickname());
-            return ResponseEntity.ok(new ApiResponse<>(true, loginResponseDto));
+            SuccessResponse<LoginResponseDto> response = new SuccessResponse<>(new LoginResponseDto(jwt, user.getUserId(), user.getUsername(), user.getNickname()));
+            return ResponseEntity.ok(response);
+
         } catch (Exception e) {
-            ApiResponse<ErrorResponse> response = new ApiResponse<>(false, new ErrorResponse(e.getMessage()));
-            return ResponseEntity.badRequest().body(response);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ErrorResponse("이메일 또는 비밀번호가 일치하지 않습니다."));
         }
 
     }
