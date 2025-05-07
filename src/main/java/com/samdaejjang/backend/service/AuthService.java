@@ -9,12 +9,11 @@ import com.samdaejjang.backend.utils.AuthProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class KakaoAuthService {
+public class AuthService {
     
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;

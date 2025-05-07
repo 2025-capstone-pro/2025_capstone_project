@@ -1,7 +1,9 @@
 package com.samdaejjang.backend.service;
 
 import com.samdaejjang.backend.dto.SignupRequestDto;
+import com.samdaejjang.backend.entity.BodySpec;
 import com.samdaejjang.backend.entity.Users;
+import com.samdaejjang.backend.repository.BodySpecRepository;
 import com.samdaejjang.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BodySpecRepository bodySpecRepository;
     private final PasswordEncoder passwordEncoder;
 
     // 회원 등록 메서드
@@ -39,7 +42,11 @@ public class UserService {
     }
 
 
+    public Optional<Users> findUser(Long userId) {
+        return userRepository.findById(userId);
+    }
 
-
-
+    public BodySpec saveBodySpec(BodySpec bodySpec) {
+        return bodySpecRepository.save(bodySpec);
+    }
 }

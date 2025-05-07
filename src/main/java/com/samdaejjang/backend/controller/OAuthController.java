@@ -2,21 +2,20 @@ package com.samdaejjang.backend.controller;
 
 import com.samdaejjang.backend.dto.AuthResponse;
 import com.samdaejjang.backend.dto.KakaoLoginRequest;
-import com.samdaejjang.backend.service.KakaoAuthService;
+import com.samdaejjang.backend.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class OAuthController {
 
-    private final KakaoAuthService kakaoLoginService;
+    private final AuthService kakaoLoginService;
 
     @PostMapping("/kakao")
     public ResponseEntity<?> kakaoLogin(@RequestBody KakaoLoginRequest request) throws IOException, InterruptedException {
