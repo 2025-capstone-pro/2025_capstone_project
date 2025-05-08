@@ -1,1 +1,1 @@
-# -2025_capstone-project
+# 2025_capstone_project
