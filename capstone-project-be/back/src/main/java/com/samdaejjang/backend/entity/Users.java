@@ -3,6 +3,7 @@ package com.samdaejjang.backend.entity;
 import com.samdaejjang.backend.dto.KakaoUserInfo;
 import com.samdaejjang.backend.dto.SignupRequestDto;
 import com.samdaejjang.backend.utils.AuthProvider;
+import com.samdaejjang.backend.utils.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,6 +28,9 @@ public class Users {
     private String password;
 
     private String nickname;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
