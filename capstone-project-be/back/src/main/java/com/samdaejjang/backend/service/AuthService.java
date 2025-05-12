@@ -4,7 +4,7 @@ import com.samdaejjang.backend.config.JwtTokenProvider;
 import com.samdaejjang.backend.dto.AuthResponse;
 import com.samdaejjang.backend.dto.KakaoLoginRequest;
 import com.samdaejjang.backend.entity.Users;
-import com.samdaejjang.backend.repository.UserRepository;
+import com.samdaejjang.backend.repository.UsersRepository;
 import com.samdaejjang.backend.utils.AuthProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AuthService {
     
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthResponse loginOrRegister(KakaoLoginRequest request) {
@@ -30,7 +30,7 @@ public class AuthService {
     }
 
     private Users registerOrFindUser(KakaoLoginRequest request) {
-        return userRepository.findByUsername(request.getEmail())
+        return usersRepository.findByUsername(request.getEmail())
 
                 // 기존에 있는 등록된 사용자이면
                 .map(existingUser -> {
@@ -48,7 +48,7 @@ public class AuthService {
                     newUser.setNickname(request.getNickname());
                     newUser.setProvider(AuthProvider.KAKAO);
                     newUser.setPhoneNumber(request.getPhoneNumber());
-                    return userRepository.save(newUser);
+                    return usersRepository.save(newUser);
                 });
     }
 

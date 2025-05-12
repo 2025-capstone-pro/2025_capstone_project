@@ -6,9 +6,8 @@ import com.samdaejjang.backend.dto.LoginResponseDto;
 import com.samdaejjang.backend.dto.SignupRequestDto;
 import com.samdaejjang.backend.dto.SignupResponseDto;
 import com.samdaejjang.backend.entity.Users;
-import com.samdaejjang.backend.repository.UserRepository;
+import com.samdaejjang.backend.repository.UsersRepository;
 import com.samdaejjang.backend.service.UserService;
-import com.samdaejjang.backend.utils.ApiResponse;
 import com.samdaejjang.backend.utils.ErrorResponse;
 import com.samdaejjang.backend.utils.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +33,7 @@ public class AuthController {
     private static final Logger log = LoggerFactory.getLogger(AuthController.class);
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/signup")
@@ -72,7 +71,7 @@ public class AuthController {
 
             log.info("authenticated user: {}", authentication.getName());
 
-            Users user = userRepository.findByUsername(authentication.getName())
+            Users user = usersRepository.findByUsername(authentication.getName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
             String jwt = jwtTokenProvider.createToken(authentication.getName());
