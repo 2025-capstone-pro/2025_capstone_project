@@ -1,7 +1,7 @@
 package com.samdaejjang.backend.service;
 
 import com.samdaejjang.backend.entity.Users;
-import com.samdaejjang.backend.repository.UserRepository;
+import com.samdaejjang.backend.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,12 +17,12 @@ import java.util.Optional;
 public class ProjectUserDetailsService implements UserDetailsService {
 
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<Users> findUser = userRepository.findByUsername(username);
+        Optional<Users> findUser = usersRepository.findByUsername(username);
         if (findUser.isPresent()) {
             return new User(findUser.get().getUsername(), findUser.get().getPassword(),new ArrayList<>());
         } else {

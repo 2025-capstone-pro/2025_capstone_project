@@ -4,7 +4,7 @@ import com.samdaejjang.backend.dto.SignupRequestDto;
 import com.samdaejjang.backend.entity.BodySpec;
 import com.samdaejjang.backend.entity.Users;
 import com.samdaejjang.backend.repository.BodySpecRepository;
-import com.samdaejjang.backend.repository.UserRepository;
+import com.samdaejjang.backend.repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +17,7 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
     private final BodySpecRepository bodySpecRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -25,7 +25,7 @@ public class UserService {
     public Users register(SignupRequestDto dto) {
 
         // DB 중복 확인
-        Optional<Users> findUser = userRepository.findByUsername(dto.getUsername());
+        Optional<Users> findUser = usersRepository.findByUsername(dto.getUsername());
         if (findUser.isPresent()) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
@@ -36,14 +36,14 @@ public class UserService {
 
         Users buildUser = Users.createUser(dto);
 
-        Users savedUser = userRepository.save(buildUser);
+        Users savedUser = usersRepository.save(buildUser);
 
         return savedUser;
     }
 
 
     public Optional<Users> findUser(Long userId) {
-        return userRepository.findById(userId);
+        return usersRepository.findById(userId);
     }
 
     public BodySpec saveBodySpec(BodySpec bodySpec) {
