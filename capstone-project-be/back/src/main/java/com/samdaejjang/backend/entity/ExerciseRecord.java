@@ -1,8 +1,12 @@
 package com.samdaejjang.backend.entity;
 
+import com.samdaejjang.backend.dto.ExerciseRecordRequestDto;
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 @Entity(name = "exercise_record")
 public class ExerciseRecord {
 
@@ -32,4 +36,16 @@ public class ExerciseRecord {
 
     @Column(name = "performed_at", nullable = false)
     private LocalDateTime performedAt;
+
+    public static ExerciseRecord fromDto(ExerciseRecordRequestDto dto, Users user) {
+        ExerciseRecord record = new ExerciseRecord();
+        record.user = user;
+        record.exerciseName = dto.getExerciseName();
+        record.setCount = dto.getSetCount();
+        record.weightKg = dto.getWeightKg();
+        record.durationMin = dto.getDurationMin();
+        record.subjectiveFeedback = dto.getSubjectiveFeedback();
+        record.performedAt = dto.getPerformedAt();
+        return record;
+    }
 }
