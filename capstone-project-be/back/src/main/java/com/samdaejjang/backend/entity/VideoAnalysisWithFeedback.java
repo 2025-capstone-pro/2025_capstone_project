@@ -1,9 +1,11 @@
 package com.samdaejjang.backend.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity(name = "video_analysis_with_feedback")
 public class VideoAnalysisWithFeedback {
 
@@ -16,8 +18,8 @@ public class VideoAnalysisWithFeedback {
     @JoinColumn(name = "video_id", nullable = false) // video_id 외래키 설정 (연관관계의 주인) , 단방향
     private ExerciseVideo exerciseVideo;
 
-    @Column(name = "frame_time_sec", nullable = false)
-    private float frameTimeSec;
+    @Column(name = "frame", nullable = false)
+    private int frame;
 
     @Column(name = "is_anomaly", nullable = false)
     private boolean isAnomaly = true;

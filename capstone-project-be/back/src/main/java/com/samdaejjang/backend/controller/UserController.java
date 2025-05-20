@@ -1,15 +1,11 @@
 package com.samdaejjang.backend.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.samdaejjang.backend.dto.BodySpecRequest;
 import com.samdaejjang.backend.dto.BodySpecResponse;
-import com.samdaejjang.backend.dto.SignupResponseDto;
 import com.samdaejjang.backend.entity.BodySpec;
 import com.samdaejjang.backend.entity.Users;
 import com.samdaejjang.backend.service.UserService;
-import com.samdaejjang.backend.utils.ApiResponse;
 import com.samdaejjang.backend.utils.SuccessResponse;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
