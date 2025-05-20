@@ -1,9 +1,6 @@
 package com.samdaejjang.backend.controller;
 
-import com.samdaejjang.backend.dto.BodySpecResponse;
-import com.samdaejjang.backend.dto.FeedbackSaveRequestDto;
-import com.samdaejjang.backend.dto.FrameDataRequest;
-import com.samdaejjang.backend.dto.VideoSummaryDto;
+import com.samdaejjang.backend.dto.*;
 import com.samdaejjang.backend.entity.ExerciseVideo;
 import com.samdaejjang.backend.service.VideoService;
 import com.samdaejjang.backend.service.FeedbackService;
@@ -95,6 +92,21 @@ public class VideoController {
             List<VideoSummaryDto> result = videoService.getVideosList(userId);
             return ResponseEntity.ok(new SuccessResponse<>(result));
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
+    /**
+     * 특정 영상에 대한 피드백 정보를 요청받는 엔드포인트
+     */
+    @GetMapping("/{videoId}")
+    public ResponseEntity<?> getVideoDetail(@PathVariable("videoId") Long videoId) {
+
+        try {
+            VideoFeedbackDetailDto response = videoService.getVideoDetails(videoId);
+            return ResponseEntity.ok(new SuccessResponse<>(response));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ErrorResponse(e.getMessage()));

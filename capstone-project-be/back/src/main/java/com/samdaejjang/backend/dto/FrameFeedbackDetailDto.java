@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FrameFeedbackDto {
+public class FrameFeedbackDetailDto {
     private int frame;
-    private float timestamp;
-    private String text;
+    private float timeSec;
+    private String feedbackText;
 }

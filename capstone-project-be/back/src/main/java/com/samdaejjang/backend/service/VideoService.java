@@ -1,6 +1,8 @@
 package com.samdaejjang.backend.service;
 
 import com.samdaejjang.backend.dto.FeedbackSaveRequestDto;
+import com.samdaejjang.backend.dto.FrameFeedbackDetailDto;
+import com.samdaejjang.backend.dto.VideoFeedbackDetailDto;
 import com.samdaejjang.backend.dto.VideoSummaryDto;
 import com.samdaejjang.backend.entity.ExerciseVideo;
 import com.samdaejjang.backend.entity.Users;
@@ -45,9 +47,8 @@ public class VideoService {
                     analysis.setExerciseVideo(savedVideo);
 
                     analysis.setFrame(frame.getFrame());
-                    analysis.setIssueDescription("자동 감지된 이상 동작"); // 향후 LLM 분석으로 대체 가능
+                    analysis.setFrameTimestamp(frame.getTimestamp());
                     analysis.setFeedbackText(frame.getText());
-                    analysis.setFeedbackTime(LocalDateTime.now());
                     return analysis;
                 })
                 .toList();
@@ -79,5 +80,32 @@ public class VideoService {
                         video.getRecordedAt()
                 ))
                 .toList();
+    }
+
+    public VideoFeedbackDetailDto getVideoDetails(Long videoId) {
+
+        ExerciseVideo video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 영상이 존재하지 않음."));
+
+        List<VideoAnalysisWithFeedback> analysisList = analysisRepository.findAllByVideoId(videoId);
+
+        if (analysisList.isEmpty()) {
+            throw new RuntimeException("해당 영상과 관련한 피드백이 없음");
+        }
+
+        List<FrameFeedbackDetailDto> feedbacks = analysisList.stream()
+                .map(a -> new FrameFeedbackDetailDto(
+                        a.getFrame(), // assuming 30fps
+                        a.getFrameTimestamp(),
+                        a.getFeedbackText()
+                ))
+                .toList();
+
+        return new VideoFeedbackDetailDto(
+                video.getVideoId(),
+                video.getVideoUrl(),
+                video.getRecordedAt(),
+                feedbacks
+        );
     }
 }
