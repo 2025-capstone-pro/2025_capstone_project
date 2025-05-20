@@ -1,7 +1,9 @@
 package com.samdaejjang.backend.controller;
 
+import com.samdaejjang.backend.dto.BodySpecResponse;
 import com.samdaejjang.backend.dto.FeedbackSaveRequestDto;
 import com.samdaejjang.backend.dto.FrameDataRequest;
+import com.samdaejjang.backend.dto.VideoSummaryDto;
 import com.samdaejjang.backend.entity.ExerciseVideo;
 import com.samdaejjang.backend.service.VideoService;
 import com.samdaejjang.backend.service.FeedbackService;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -82,11 +86,18 @@ public class VideoController {
     }
 
     /**
-     * 피드백 정보 불러오는 요청 엔드포인트
+     * 해당 사용자의 분석된 운동 영상 리스트를 조회하는 엔드포인트
      */
-/*
-    @GetMapping("/feedback")
-*/
+    @GetMapping
+    public ResponseEntity<?> getUserVideos(@RequestParam("userId") Long userId) {
 
+        try {
+            List<VideoSummaryDto> result = videoService.getVideosList(userId);
+            return ResponseEntity.ok(new SuccessResponse<>(result));
 
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
 }
