@@ -1,10 +1,11 @@
 package com.samdaejjang.backend.service;
 
 import com.samdaejjang.backend.dto.FeedbackSaveRequestDto;
+import com.samdaejjang.backend.dto.VideoSummaryDto;
 import com.samdaejjang.backend.entity.ExerciseVideo;
 import com.samdaejjang.backend.entity.Users;
 import com.samdaejjang.backend.entity.VideoAnalysisWithFeedback;
-import com.samdaejjang.backend.repository.ExerciseVideoRepository;
+import com.samdaejjang.backend.repository.VideoRepository;
 import com.samdaejjang.backend.repository.UsersRepository;
 import com.samdaejjang.backend.repository.VideoAnalysisRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -20,14 +21,14 @@ import java.util.Optional;
 public class VideoService {
 
     private final VideoAnalysisRepository analysisRepository;
-    private final ExerciseVideoRepository exerciseVideoRepository;
+    private final VideoRepository videoRepository;
     private final UsersRepository usersRepository;
 
     public ExerciseVideo save(FeedbackSaveRequestDto requestDTO) {
 
         Optional<Users> findUser = usersRepository.findById(requestDTO.getUserId());
         if (!findUser.isPresent()) {
-            throw new EntityNotFoundException("User not found");
+            throw new EntityNotFoundException("해당 요청의 사용자가 없음");
         }
 
         // 1. ExerciseVideo 생성
@@ -35,7 +36,7 @@ public class VideoService {
         video.setUser(findUser.get());
         video.setVideoUrl(requestDTO.getVideoUrl());
 
-        ExerciseVideo savedVideo = exerciseVideoRepository.save(video);
+        ExerciseVideo savedVideo = videoRepository.save(video);
 
         // 2. 프레임 피드백 → VideoAnalysisWithFeedback 변환
         List<VideoAnalysisWithFeedback> feedbackEntities = requestDTO.getFeedbackList().stream()
@@ -55,5 +56,28 @@ public class VideoService {
         analysisRepository.saveAll(feedbackEntities);
 
         return savedVideo;
+    }
+
+    public List<VideoSummaryDto> getVideosList(Long userId) {
+
+        Optional<Users> findUser = usersRepository.findById(userId);
+
+        if (!findUser.isPresent()) {
+            throw new EntityNotFoundException("해당 요청의 사용자가 없음");
+        }
+
+        List<ExerciseVideo> videosList = videoRepository.findAllByUserId(userId);
+
+        if (videosList.isEmpty()) {
+            throw new RuntimeException("저장된 영상이 없음");
+        }
+
+        return videosList.stream()
+                .map(video -> new VideoSummaryDto(
+                        video.getVideoId(),
+                        video.getVideoUrl(),
+                        video.getRecordedAt()
+                ))
+                .toList();
     }
 }
