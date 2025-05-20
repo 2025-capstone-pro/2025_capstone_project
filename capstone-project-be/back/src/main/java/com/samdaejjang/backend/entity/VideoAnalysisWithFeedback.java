@@ -21,15 +21,9 @@ public class VideoAnalysisWithFeedback {
     @Column(name = "frame", nullable = false)
     private int frame;
 
-    @Column(name = "is_anomaly", nullable = false)
-    private boolean isAnomaly = true;
-
-    @Column(name = "issue_description", nullable = false)
-    private String issueDescription;
+    @Column(name = "frame_timestamp", nullable = false)
+    private float frameTimestamp;
 
     @Column(name = "feedback_text", nullable = false, columnDefinition = "TEXT")
     private String feedbackText;
-
-    @Column(name = "feedback_time", nullable = false)
-    private LocalDateTime feedbackTime;
 }
