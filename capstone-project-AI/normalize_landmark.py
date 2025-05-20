@@ -32,7 +32,7 @@ except ValueError:
 
 
 # 비디오 파일이 있는 디렉토리 경로
-input_video_dir = '/data/hamboong/tmp/cap/data/Video_Dataset/good/1115_video' # 예시: 비디오들이 있는 폴더
+input_video_dir = './../data/Video_Dataset/good/1115_video' # 예시: 비디오들이 있는 폴더
 
 # 처리할 비디오 파일 확장자 목록
 allowed_extensions = ('.mp4', '.avi', '.mov', '.mkv')
