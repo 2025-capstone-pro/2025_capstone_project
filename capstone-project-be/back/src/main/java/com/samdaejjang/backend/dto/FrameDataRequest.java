@@ -10,32 +10,23 @@ import java.util.List;
 @AllArgsConstructor
 public class FrameDataRequest {
     private String userId;
-    private List<Frame> frames;
+    private List<FrameDto> frames;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class Frame {
-        private Long frameId;
+    public class FrameDto {
+        private Long frameIndex;
         private Long timestamp;
-        private List<PoseData> poseData;
+        private List<LandmarkDto> landmarks;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class PoseData {
-        private Integer id;
-        private String name;
-        private Position position;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public class Position {
-        private Double x;
-        private Double y;
-        private Double z;
+    public class LandmarkDto {
+        private float x;
+        private float y;
+        private float z;
     }
 }

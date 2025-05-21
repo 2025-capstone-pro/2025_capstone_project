@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class LLMRequest {
-    private List<FrameDataRequest.Frame> poseData;
+    private List<FrameDataRequest.FrameDto> poseData;
     private List<Anomaly> anomalies;
 }
