@@ -23,6 +23,8 @@ public class JwtUtil {
 
     /**
      * 클라이언트가 보낸 jwt 가 유효한지 검증하는 메서드
+     * 클레임 부분 뽑아서 해싱한다음에 받은 jwt 의 signature 값고 비교
+     * 같으면 검증 완료, 다르면 검증 실패
      */
     public boolean isTokenValid(String token) {
         try {

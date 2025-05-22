@@ -23,8 +23,8 @@ public class ExerciseRecordService {
     private final ExerciseRecordRepository exerciseRecordRepository;
     private final UsersRepository usersRepository;
 
-    public Long saveExerciseRecord(ExerciseRecordRequestDto requestDto) {
-        Optional<Users> findUser = usersRepository.findById(requestDto.getUserId());
+    public Long saveExerciseRecord(String userId, ExerciseRecordRequestDto requestDto) {
+        Optional<Users> findUser = usersRepository.findById(Long.parseLong(userId));
         if (!findUser.isPresent()) {
             throw new EntityNotFoundException("해당 유저 정보 없음");
         }
@@ -35,9 +35,9 @@ public class ExerciseRecordService {
         return save.getRecordId();
     }
 
-    public List<ExerciseRecordResponseDto> getRecordByDate(Long userId, LocalDate date) {
+    public List<ExerciseRecordResponseDto> getRecordByDate(String userId, LocalDate date) {
 
-        Optional<Users> findUser = usersRepository.findById(userId);
+        Optional<Users> findUser = usersRepository.findById(Long.parseLong(userId));
         if (!findUser.isPresent()) {
             throw new EntityNotFoundException("해당 유저 정보 없음");
         }

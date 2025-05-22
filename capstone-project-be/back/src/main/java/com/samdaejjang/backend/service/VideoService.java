@@ -26,9 +26,9 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final UsersRepository usersRepository;
 
-    public ExerciseVideo save(FeedbackSaveRequestDto requestDTO) {
+    public ExerciseVideo save(Long userId, FeedbackSaveRequestDto requestDTO) {
 
-        Optional<Users> findUser = usersRepository.findById(requestDTO.getUserId());
+        Optional<Users> findUser = usersRepository.findById(userId);
         if (!findUser.isPresent()) {
             throw new EntityNotFoundException("해당 요청의 사용자가 없음");
         }

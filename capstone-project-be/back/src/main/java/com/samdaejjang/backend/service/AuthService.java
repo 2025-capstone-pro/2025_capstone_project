@@ -24,7 +24,7 @@ public class AuthService {
         Users user = registerOrFindUser(request);
 
         // JWT 토큰 생성
-        String token = jwtTokenProvider.createToken(user.getUsername());
+        String token = jwtTokenProvider.createToken(user);
 
         return new AuthResponse(true, new AuthResponse.DataPayload(token, user.getUserId()));
     }

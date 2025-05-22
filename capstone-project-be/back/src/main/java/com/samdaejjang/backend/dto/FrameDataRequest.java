@@ -9,7 +9,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FrameDataRequest {
-    private String userId;
     private List<FrameDto> frames;
 
     @Data

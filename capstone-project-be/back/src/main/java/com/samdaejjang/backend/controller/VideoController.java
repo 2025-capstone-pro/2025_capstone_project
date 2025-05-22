@@ -30,7 +30,8 @@ public class VideoController {
      * 운동 영상 피드백 요청받는 엔드포인트
      */
     @PostMapping("feedback")
-    public Mono<?> startFeedback(@RequestBody FrameDataRequest request) {
+    public Mono<?> startFeedback(@RequestHeader("X-User-Id") String userId,
+                                 @RequestBody FrameDataRequest request) {
 
         return feedbackService.generateFeedback(request)
                 .<ResponseEntity<?>>map(feedback ->
@@ -57,10 +58,11 @@ public class VideoController {
      * 운동 영상 메타데이터, 피드백 정보를 DB에 저장하는 요청
      */
     @PostMapping("/metadata")
-    public ResponseEntity<?> saveVideoMetadataAndFeedback(@RequestBody FeedbackSaveRequestDto requestDTO) {
+    public ResponseEntity<?> saveVideoMetadataAndFeedback(@RequestHeader("X-User-Id") String userId,
+                                                          @RequestBody FeedbackSaveRequestDto requestDTO) {
 
         try {
-            ExerciseVideo savedVideo = videoService.save(requestDTO);
+            ExerciseVideo savedVideo = videoService.save(Long.parseLong(userId), requestDTO);
 
             SuccessResponse<ExerciseVideoResponseDTO> response = new SuccessResponse<>(new ExerciseVideoResponseDTO(
                     savedVideo.getVideoId(),
@@ -86,10 +88,10 @@ public class VideoController {
      * 해당 사용자의 분석된 운동 영상 리스트를 조회하는 엔드포인트
      */
     @GetMapping
-    public ResponseEntity<?> getUserVideos(@RequestParam("userId") Long userId) {
+    public ResponseEntity<?> getUserVideos(@RequestHeader("X-User-Id") String userId) {
 
         try {
-            List<VideoSummaryDto> result = videoService.getVideosList(userId);
+            List<VideoSummaryDto> result = videoService.getVideosList(Long.parseLong(userId));
             return ResponseEntity.ok(new SuccessResponse<>(result));
 
         } catch (Exception e) {
