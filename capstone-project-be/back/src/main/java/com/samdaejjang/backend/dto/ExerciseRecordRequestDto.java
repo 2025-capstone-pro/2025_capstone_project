@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 public class ExerciseRecordRequestDto {
-    private Long userId;
     private String exerciseName;
     private Integer setCount;
     private Float weightKg;

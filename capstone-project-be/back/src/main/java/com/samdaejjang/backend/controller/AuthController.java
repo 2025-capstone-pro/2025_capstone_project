@@ -61,7 +61,6 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto) {
 
         try {
-
             // Spring Security 인증 과정
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -71,12 +70,12 @@ public class AuthController {
 
             log.info("authenticated user: {}", authentication.getName());
 
-            Users user = usersRepository.findByUsername(authentication.getName())
+            Users findUser = usersRepository.findByUsername(authentication.getName())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-            String jwt = jwtTokenProvider.createToken(authentication.getName());
+            String jwt = jwtTokenProvider.createToken(findUser);
 
-            SuccessResponse<LoginResponseDto> response = new SuccessResponse<>(new LoginResponseDto(jwt, user.getUserId(), user.getUsername(), user.getNickname()));
+            SuccessResponse<LoginResponseDto> response = new SuccessResponse<>(new LoginResponseDto(jwt, findUser.getUserId(), findUser.getUsername(), findUser.getNickname()));
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {

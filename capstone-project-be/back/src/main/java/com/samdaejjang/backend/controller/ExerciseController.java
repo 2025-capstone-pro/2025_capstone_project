@@ -27,10 +27,11 @@ public class ExerciseController {
      * 운동 기록 저장 요청 받는 엔드포인트
      */
     @PostMapping
-    public ResponseEntity<?> createExerciseRecord(@RequestBody ExerciseRecordRequestDto requestDto) {
+    public ResponseEntity<?> createExerciseRecord(@RequestHeader("X-User-Id") String userId,
+                                                  @RequestBody ExerciseRecordRequestDto requestDto) {
 
         try {
-            Long exerciseRecordId = exerciseRecordService.saveExerciseRecord(requestDto);
+            Long exerciseRecordId = exerciseRecordService.saveExerciseRecord(userId, requestDto);
 
             Map<String, Long> map = new HashMap<>();
             map.put("recordId", exerciseRecordId);
@@ -42,12 +43,13 @@ public class ExerciseController {
                     .body(new ErrorResponse(e.getMessage()));
         }
     }
+
     @GetMapping
-    public ResponseEntity<?> getRecordsByDate(@RequestParam("userId") Long userid,
+    public ResponseEntity<?> getRecordsByDate(@RequestHeader("X-User-Id") String userId,
                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
 
         try {
-            List<ExerciseRecordResponseDto> list = exerciseRecordService.getRecordByDate(userid, date);
+            List<ExerciseRecordResponseDto> list = exerciseRecordService.getRecordByDate(userId, date);
 
             SuccessResponse<List<ExerciseRecordResponseDto>> response = new SuccessResponse<>(list);
             return ResponseEntity.ok(response);
