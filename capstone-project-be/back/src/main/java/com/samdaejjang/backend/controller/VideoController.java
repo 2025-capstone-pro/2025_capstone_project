@@ -3,7 +3,7 @@ package com.samdaejjang.backend.controller;
 import com.samdaejjang.backend.dto.*;
 import com.samdaejjang.backend.entity.ExerciseVideo;
 import com.samdaejjang.backend.service.VideoService;
-import com.samdaejjang.backend.service.FeedbackService;
+import com.samdaejjang.backend.service.LLMService;
 import com.samdaejjang.backend.service.S3Service;
 import com.samdaejjang.backend.utils.ErrorResponse;
 import com.samdaejjang.backend.utils.SuccessResponse;
@@ -24,16 +24,15 @@ public class VideoController {
 
     private final VideoService videoService;
     private final S3Service s3Service;
-    private final FeedbackService feedbackService;
+    private final LLMService LLMService;
 
     /**
      * 운동 영상 피드백 요청받는 엔드포인트
      */
     @PostMapping("feedback")
-    public Mono<?> startFeedback(@RequestHeader("X-User-Id") String userId,
-                                 @RequestBody FrameDataRequest request) {
+    public Mono<?> startFeedback(@RequestBody FrameDataRequest request) {
 
-        return feedbackService.generateFeedback(request)
+        return LLMService.generateFeedback(request)
                 .<ResponseEntity<?>>map(feedback ->
                         ResponseEntity.ok(new SuccessResponse<>(feedback)))
                 .onErrorResume(e -> {
@@ -48,7 +47,8 @@ public class VideoController {
      * 프론트로부터 Presigned URL 요청받는 엔드포인트
      */
     @GetMapping("/presigned-url")
-    public ResponseEntity<String> presignedUrl(@RequestParam String fileName, @RequestParam String contentType) {
+    public ResponseEntity<String> presignedUrl(@RequestParam String fileName,
+                                               @RequestParam String contentType) {
 
         String url = s3Service.generatePresignedUrl(fileName, contentType);
         return ResponseEntity.ok(url);

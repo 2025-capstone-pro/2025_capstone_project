@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class LLMRequest {
+public class PoseRequestDto {
     private List<FrameDataRequest.FrameDto> poseData;
     private List<Anomaly> anomalies;
 }
