@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +68,7 @@ public class VideoController {
 
             String s3Key = "upload/" + fileName;
 
-            String presignedUrl = s3Service.generatePresignedUrl(s3Key);
+            String presignedUrl = s3Service.generatePresignedPutUrl(s3Key);
 
             //DB에 정보 저장
             ExerciseVideo exerciseVideo = new ExerciseVideo();
@@ -86,6 +87,41 @@ public class VideoController {
                     .body(new ErrorResponse(e.getMessage()));
         }
     }
+
+    @GetMapping("/presigned-url/view")
+    public ResponseEntity<?> getPresignedGetUrl(@RequestHeader("X-User-Id") String userId,
+                                                @RequestParam Long videoId) {
+        try {
+            // 사용자 검증
+            Optional<Users> findUser = usersRepository.findById(Long.parseLong(userId));
+            if (findUser.isEmpty()) {
+                throw new EntityNotFoundException("찾는 회원 없음");
+            }
+
+            // 영상 정보 조회
+            Optional<ExerciseVideo> videoOpt = videoRepository.findById(videoId);
+            if (videoOpt.isEmpty()) {
+                throw new EntityNotFoundException("영상 없음");
+            }
+
+            ExerciseVideo video = videoOpt.get();
+
+            // 사용자 불일치 시 차단
+            if (!video.getUser().getUserId().equals(findUser.get().getUserId())) {
+                throw new AccessDeniedException("해당 영상에 접근할 수 없습니다.");
+            }
+
+            // presigned GET URL 생성
+            String presignedGetUrl = s3Service.generatePresignedGetUrl(video.getS3Key());
+
+            return ResponseEntity.ok(new SuccessResponse<>(Map.of("presignedUrl", presignedGetUrl)));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
 
     /**
      * 피드백 정보를 DB에 저장하는 요청

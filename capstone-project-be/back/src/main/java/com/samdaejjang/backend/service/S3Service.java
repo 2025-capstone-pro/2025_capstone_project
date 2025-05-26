@@ -42,4 +42,19 @@ public class S3Service {
         return presignedRequest.url().toString();
     }
 
+    public String generatePresignedGetUrl(String s3Key) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(s3Key)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .getObjectRequest(getObjectRequest)
+                .signatureDuration(Duration.ofMinutes(10))
+                .build();
+
+        PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+        return presignedRequest.url().toString();
+    }
+
 }
