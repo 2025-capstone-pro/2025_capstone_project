@@ -3,8 +3,11 @@ package com.samdaejjang.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -21,14 +24,13 @@ public class S3Service {
 
     /**
      * Presigned URL 을 생성하는 메서드
-     * @param fileName 파일 이름, contentType 파일 타입
+     * @param s3Key
      * @return presigned url
      */
-    public String generatePresignedUrl(String fileName, String contentType) {
+    public String generatePresignedPutUrl(String s3Key) {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
-                .contentType(contentType)
+                .key(s3Key)
                 .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()

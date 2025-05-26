@@ -20,8 +20,11 @@ public class ExerciseVideo {
     @JoinColumn(name = "user_id", nullable = false) // user_id 외래키 설정 (연관관계의 주인)
     private Users user;
 
-    @Column(name = "video_url", nullable = false)
-    private String videoUrl;
+    @Column(name = "video_name")
+    private String videoName;
+
+    @Column(name = "s3_key", nullable = false)
+    private String s3Key;
 
     @Column(name = "recorded_at", nullable = false, updatable = false)
     @CreationTimestamp
