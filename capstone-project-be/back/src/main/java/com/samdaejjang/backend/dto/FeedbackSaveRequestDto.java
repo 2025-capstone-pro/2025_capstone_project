@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackSaveRequestDto {
-    private String videoUrl;
+    private Long videoId;
     private List<FrameFeedbackDto> feedbackList;
 }

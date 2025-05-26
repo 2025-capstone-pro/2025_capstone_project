@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class VideoFeedbackDetailDto {
     private Long videoId;
-    private String videoUrl;
+    private String s3Key;
     private LocalDateTime analyzedAt;
     private List<FrameFeedbackDetailDto> feedbackList;
 }

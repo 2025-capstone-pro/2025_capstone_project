@@ -26,25 +26,19 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final UsersRepository usersRepository;
 
-    public ExerciseVideo save(Long userId, FeedbackSaveRequestDto requestDTO) {
+    public void save(Long userId, FeedbackSaveRequestDto requestDTO) {
 
         Optional<Users> findUser = usersRepository.findById(userId);
         if (!findUser.isPresent()) {
             throw new EntityNotFoundException("해당 요청의 사용자가 없음");
         }
 
-        // 1. ExerciseVideo 생성
-        ExerciseVideo video = new ExerciseVideo();
-        video.setUser(findUser.get());
-        video.setVideoUrl(requestDTO.getVideoUrl());
-
-        ExerciseVideo savedVideo = videoRepository.save(video);
-
+        Optional<ExerciseVideo> findVideo = videoRepository.findById(requestDTO.getVideoId());
         // 2. 프레임 피드백 → VideoAnalysisWithFeedback 변환
         List<VideoAnalysisWithFeedback> feedbackEntities = requestDTO.getFeedbackList().stream()
                 .map(frame -> {
                     VideoAnalysisWithFeedback analysis = new VideoAnalysisWithFeedback();
-                    analysis.setExerciseVideo(savedVideo);
+                    analysis.setExerciseVideo(findVideo.get());
 
                     analysis.setFrame(frame.getFrame());
                     analysis.setFrameTimestamp(frame.getTimestamp());
@@ -55,8 +49,6 @@ public class VideoService {
 
         // 3. 저장
         analysisRepository.saveAll(feedbackEntities);
-
-        return savedVideo;
     }
 
     public List<VideoSummaryDto> getVideosList(Long userId) {
@@ -76,7 +68,7 @@ public class VideoService {
         return videosList.stream()
                 .map(video -> new VideoSummaryDto(
                         video.getVideoId(),
-                        video.getVideoUrl(),
+                        video.getS3Key(),
                         video.getRecordedAt()
                 ))
                 .toList();
@@ -103,7 +95,7 @@ public class VideoService {
 
         return new VideoFeedbackDetailDto(
                 video.getVideoId(),
-                video.getVideoUrl(),
+                video.getS3Key(),
                 video.getRecordedAt(),
                 feedbacks
         );

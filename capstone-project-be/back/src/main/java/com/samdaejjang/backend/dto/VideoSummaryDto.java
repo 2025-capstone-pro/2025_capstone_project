@@ -10,6 +10,6 @@ import java.time.LocalDateTime;
 public class VideoSummaryDto {
 
     private Long videoId;
-    private String videoUrl;
+    private String s3Key;
     private LocalDateTime analyzedAt;
 }

@@ -2,11 +2,15 @@ package com.samdaejjang.backend.controller;
 
 import com.samdaejjang.backend.dto.*;
 import com.samdaejjang.backend.entity.ExerciseVideo;
+import com.samdaejjang.backend.entity.Users;
+import com.samdaejjang.backend.repository.UsersRepository;
+import com.samdaejjang.backend.repository.VideoRepository;
 import com.samdaejjang.backend.service.VideoService;
 import com.samdaejjang.backend.service.LLMService;
 import com.samdaejjang.backend.service.S3Service;
 import com.samdaejjang.backend.utils.ErrorResponse;
 import com.samdaejjang.backend.utils.SuccessResponse;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,8 +30,10 @@ import java.util.List;
 public class VideoController {
 
     private final VideoService videoService;
-    private final S3Service s3Service;
     private final LLMService LLMService;
+    private final S3Service s3Service;
+    private final UsersRepository usersRepository;
+    private final VideoRepository videoRepository;
 
     /**
      * 운동 영상 피드백 요청받는 엔드포인트
@@ -47,27 +56,48 @@ public class VideoController {
      * 프론트로부터 Presigned URL 요청받는 엔드포인트
      */
     @GetMapping("/presigned-url")
-    public ResponseEntity<String> presignedUrl(@RequestParam String fileName,
-                                               @RequestParam String contentType) {
+    public ResponseEntity<?> presignedUrl(@RequestHeader("X-User-Id") String userId,
+                                          @RequestParam String fileName) {
 
-        String url = s3Service.generatePresignedUrl(fileName, contentType);
-        return ResponseEntity.ok(url);
+        try {
+            Optional<Users> findUser = usersRepository.findById(Long.parseLong(userId));
+            if (!findUser.isPresent()) {
+                throw new EntityNotFoundException("찾는 회원 없음");
+            }
+
+            String s3Key = "upload/" + fileName;
+
+            String presignedUrl = s3Service.generatePresignedUrl(s3Key);
+
+            //DB에 정보 저장
+            ExerciseVideo exerciseVideo = new ExerciseVideo();
+            exerciseVideo.setVideoName(fileName);
+            exerciseVideo.setS3Key(s3Key);
+            exerciseVideo.setUser(findUser.get());
+
+            ExerciseVideo saved = videoRepository.save(exerciseVideo);
+
+            Map<String, ?> response = Map.of("presignedUrl", presignedUrl, "videoId", saved.getVideoId());
+
+            return ResponseEntity.ok(new SuccessResponse<>(response));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
     }
 
     /**
-     * 운동 영상 메타데이터, 피드백 정보를 DB에 저장하는 요청
+     * 피드백 정보를 DB에 저장하는 요청
      */
     @PostMapping("/metadata")
     public ResponseEntity<?> saveVideoMetadataAndFeedback(@RequestHeader("X-User-Id") String userId,
                                                           @RequestBody FeedbackSaveRequestDto requestDTO) {
 
         try {
-            ExerciseVideo savedVideo = videoService.save(Long.parseLong(userId), requestDTO);
+            videoService.save(Long.parseLong(userId), requestDTO);
 
-            SuccessResponse<ExerciseVideoResponseDTO> response = new SuccessResponse<>(new ExerciseVideoResponseDTO(
-                    savedVideo.getVideoId(),
-                    savedVideo.getUser().getUserId()
-            ));
+            SuccessResponse<ExerciseVideoResponseDTO> response = new SuccessResponse<>(new ExerciseVideoResponseDTO("성공적으로 저장됨"));
 
             return ResponseEntity.ok(response);
 
@@ -80,8 +110,7 @@ public class VideoController {
     @Data
     @AllArgsConstructor
     public static class ExerciseVideoResponseDTO {
-        private Long videoId;
-        private Long userId;
+        private String msg;
     }
 
     /**
