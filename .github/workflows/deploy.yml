@@ -33,7 +33,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           source: "./.env"
-          target: "capstone"
+          target: "capstone/capstone-project-be"
 
       - name: Copy docker-compose.yaml to EC2
         uses: appleboy/scp-action@master
@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           source: "./capstone-project-be/docker-compose.yml"
-          target: "capstone"
+          target: "capstone/capstone-project-be"
 
   build-back:
     name: Build & Push Spring Boot (back)
@@ -148,5 +148,5 @@ jobs:
             
             sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-spring:latest
             sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-gateway:latest
-            sudo docker-compose -f ~/capstone/docker-compose.yml up -d --remove-orphans
+            sudo docker-compose -f ~/capstone/capstone-project-be/docker-compose.yml up -d --remove-orphans
             sudo docker image prune -f
