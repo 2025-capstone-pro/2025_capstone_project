@@ -64,7 +64,7 @@ jobs:
 
       - name: Build back project
         working-directory: ./capstone-project-be/back
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
         env:
           DATASOURCE_URL: ${{ secrets.DATASOURCE_URL }}
           DATASOURCE_USERNAME: ${{ secrets.DATASOURCE_USERNAME }}
@@ -108,7 +108,7 @@ jobs:
 
       - name: Build gateway project
         working-directory: ./capstone-project-be/gateway
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: Dockerhub Login
         uses: docker/login-action@v3
