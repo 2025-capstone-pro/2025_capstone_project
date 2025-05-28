@@ -84,7 +84,7 @@ jobs:
         with:
           context: ./capstone-project-be/back
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}:latest
+          tags: ${{ secrets.DOCKER_REPO }}/2025-capstone-spring:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -121,7 +121,7 @@ jobs:
         with:
           context: ./capstone-project-be/gateway
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}:latest
+          tags: ${{ secrets.DOCKER_REPO }}/2025-capstone-gateway:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
