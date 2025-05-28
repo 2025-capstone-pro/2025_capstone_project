@@ -143,7 +143,7 @@ jobs:
             
             fi
             
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/back
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/gateway
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-spring:latest
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-gateway:latest
             sudo docker-compose -f ~/capstone/docker-compose.yml up -d --remove-orphans
             sudo docker image prune -f

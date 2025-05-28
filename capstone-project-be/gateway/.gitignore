@@ -38,4 +38,3 @@ out/
 
 ### local dev properties ###
 application.properties
-application_prod.properties
