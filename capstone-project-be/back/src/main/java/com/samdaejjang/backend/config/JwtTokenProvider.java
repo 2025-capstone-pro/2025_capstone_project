@@ -21,7 +21,7 @@ public class JwtTokenProvider {
 
     @Value("${jwt.expiration}")
     private long expiration;
-
+ 
     private Key key;
 
     @PostConstruct
