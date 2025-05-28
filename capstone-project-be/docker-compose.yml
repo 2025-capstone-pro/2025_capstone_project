@@ -6,7 +6,7 @@ services:
   gateway:
     container_name: gateway
     restart: always
-    image: 2025-capstone/gateway
+    image: rudah78/2025-capstone-gateway:latest
     env_file:
       - .env
     environment:
@@ -20,7 +20,7 @@ services:
   back:
     container_name: back
     restart: always
-    image: 2025-capstone/back
+    image: rudah78/2025-capstone-spring:latest
     env_file:
       - .env
     environment:
