@@ -1,0 +1,42 @@
+## Production Deploy Version
+
+version: '3'
+
+services:
+  gateway:
+    container_name: gateway
+    restart: always
+    image: 2025-capstone/gateway
+    env_file:
+      - .env
+    environment:
+      TZ: "Asia/Seoul"
+    ports:
+      - "8081:6060"
+    networks:
+      - gateway_network
+      - backend_network
+
+  back:
+    container_name: back
+    restart: always
+    image: 2025-capstone/back
+    env_file:
+      - .env
+    environment:
+      TZ : "Asia/Seoul"
+    ports:
+      - "8080:8080"
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - /path/to/logs:/container/path/to/logs
+    networks:
+      - backend_network
+
+networks:
+  gateway_network:
+    driver: bridge
+  backend_network:
+    driver: bridge
