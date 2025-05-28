@@ -117,7 +117,7 @@ jobs:
         with:
           context: ./capstone-project-be/gateway
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}/back:latest
+          tags: ${{ secrets.DOCKER_REPO }}/gateway:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
