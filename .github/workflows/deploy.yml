@@ -13,35 +13,30 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create env file
+      - name: Create deploy directory and .env
         run: |
-          echo DATASOURCE_URL=${{ secrets.DATASOURCE_URL }} >> .env
-          echo DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} >> .env
-          echo DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} >> .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-          echo JWT_EXP=${{ secrets.JWT_EXP }} >> .env
-          echo AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} >> .env
-          echo AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} >> .env
-          echo S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} >> .env
-          echo ANOMALY_URL=${{ secrets.ANOMALY_URL }} >> .env
-          echo LLM_URL=${{ secrets.LLM_URL }} >> .env
+          mkdir deploy
+          echo DATASOURCE_URL=${{ secrets.DATASOURCE_URL }} >> deploy/.env
+          echo DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }} >> deploy/.env
+          echo DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }} >> deploy/.env
+          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> deploy/.env
+          echo JWT_EXP=${{ secrets.JWT_EXP }} >> deploy/.env
+          echo AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }} >> deploy/.env
+          echo AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }} >> deploy/.env
+          echo S3_BUCKET_NAME=${{ secrets.S3_BUCKET_NAME }} >> deploy/.env
+          echo ANOMALY_URL=${{ secrets.ANOMALY_URL }} >> deploy/.env
+          echo LLM_URL=${{ secrets.LLM_URL }} >> deploy/.env
 
-      - name: Copy .env to EC2
+      - name: Copy docker-compose.yml to deploy directory
+        run: cp ./capstone-project-be/docker-compose.yml deploy/
+
+      - name: Copy deploy files to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: "./.env"
-          target: "capstone/capstone-project-be"
-
-      - name: Copy docker-compose.yaml to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_KEY }}
-          source: "./capstone-project-be/docker-compose.yml"
+          source: "./deploy/*"
           target: "capstone/capstone-project-be"
 
   build-back:
