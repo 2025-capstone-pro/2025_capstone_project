@@ -28,7 +28,7 @@ public class JwtTokenProvider {
     protected void init() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
-    }
+    } 
 
     public String createToken(Users user) {
         Date now = new Date();
