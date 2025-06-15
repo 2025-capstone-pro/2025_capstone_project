@@ -1,0 +1,12 @@
+fastapi==0.115.12
+uvicorn==0.34.3
+pydantic==2.11.7
+python-multipart==0.0.20
+torch>=2.0.0
+torchvision>=0.15.0
+torchaudio>=2.0.0
+transformers>=4.30.0
+peft>=0.4.0
+huggingface_hub>=0.16.0
+accelerate>=0.20.0
+safetensors>=0.3.0
