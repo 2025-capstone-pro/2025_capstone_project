@@ -7,6 +7,8 @@ from peft import PeftModel, PeftConfig
 import uvicorn
 from contextlib import asynccontextmanager
 import logging
+import os
+from pathlib import Path
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -35,12 +37,13 @@ class HealthResponse(BaseModel):
 def load_model():
     global model, tokenizer
     
+    # 이미 모델이 로드되어 있다면 스킵
+    if model is not None and tokenizer is not None:
+        logger.info("모델이 이미 로드되어 있습니다.")
+        return
+    
     try:
         # 경로 설정 - 상대경로로 수정
-        import os
-        from pathlib import Path
-        
-        # 현재 스크립트 위치를 기준으로 상대경로 설정
         current_dir = Path(__file__).parent
         model_dir = current_dir / "lora"
         
@@ -49,10 +52,13 @@ def load_model():
         # 디렉토리 존재 확인
         if not model_dir.exists():
             raise FileNotFoundError(f"모델 디렉토리를 찾을 수 없습니다: {model_dir}")
-        
 
         logger.info("PEFT 구성 로드 중...")
         peft_config = PeftConfig.from_pretrained(model_dir)
+        
+        # HuggingFace 캐시 디렉토리 설정
+        cache_dir = os.path.join(os.path.expanduser("~"), ".cache", "huggingface")
+        os.makedirs(cache_dir, exist_ok=True)
         
         logger.info("Base 모델 로드 중...")
         base_model = AutoModelForCausalLM.from_pretrained(
@@ -60,6 +66,7 @@ def load_model():
             return_dict=True,
             torch_dtype=torch.float16,
             device_map="auto",  # GPU 자동 할당
+            cache_dir=cache_dir  # 캐시 디렉토리 지정
         )
         
         logger.info("LoRA weight 로드 중...")
@@ -67,7 +74,10 @@ def load_model():
         model.eval()
         
         logger.info("토크나이저 로드 중...")
-        tokenizer = AutoTokenizer.from_pretrained(peft_config.base_model_name_or_path)
+        tokenizer = AutoTokenizer.from_pretrained(
+            peft_config.base_model_name_or_path,
+            cache_dir=cache_dir  # 캐시 디렉토리 지정
+        )
         tokenizer.pad_token = tokenizer.eos_token
         
         logger.info("모델 로딩 완료!")
