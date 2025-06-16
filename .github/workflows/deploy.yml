@@ -147,8 +147,14 @@ jobs:
           context: ./capstone-project-AI/chatbot
           push: true
           tags: ${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: |
+            type=gha
+            type=registry,ref=${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:cache
+          cache-to: |
+            type=gha,mode=max
+            type=registry,ref=${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:cache,mode=max
+          build-args: |
+            BUILDKIT_INLINE_CACHE=1
 
   deploy:
     name: Deploy to EC2 via Docker Compose

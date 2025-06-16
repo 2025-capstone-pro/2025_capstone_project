@@ -2,15 +2,18 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# 시스템 패키지 업데이트 (캐시 활용)
+# 시스템 패키지 설치 (한 번에 처리하고 캐시 정리)
 RUN apt-get update && apt-get install -y \
     build-essential \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # requirements.txt 복사 및 설치
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+# pip 캐시 활용하여 패키지 설치
+RUN pip install --cache-dir=/tmp/pip-cache -r requirements.txt \
+    && rm -rf /tmp/pip-cache
 
 # 애플리케이션 코드 복사
 COPY . .
