@@ -113,7 +113,7 @@ app.add_middleware(
 )
 
 # 답변 생성 함수
-def generate_answer(question: str, max_length: int = 256, temperature: float = 0.7, top_p: float = 0.9):
+def generate_answer(promptText: str, max_length: int = 256, temperature: float = 0.7, top_p: float = 0.9):
     global model, tokenizer
     
     if model is None or tokenizer is None:
@@ -121,7 +121,7 @@ def generate_answer(question: str, max_length: int = 256, temperature: float = 0
     
     try:
         prompt = f"""### 질문:
-{question}
+{promptText}
 ### 답변:
 """
         
@@ -176,12 +176,12 @@ async def health_check():
 async def ask_question(request: QuestionRequest):
     """질문에 대한 답변 생성"""
     
-    if not request.question.strip():
+    if not request.promptText.strip():
         raise HTTPException(status_code=400, detail="질문이 비어있습니다.")
     
     try:
         answer = generate_answer(
-            question=request.question,
+            promptText=request.promptText,
             max_length=request.max_length,
             temperature=request.temperature,
             top_p=request.top_p
