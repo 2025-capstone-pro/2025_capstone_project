@@ -27,7 +27,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**", "/error","/api/user/**","/api/video/**", "/api/calendar/**",
-                        "/api/feedback/**").permitAll()
+                        "/api/feedback/**","/api/routine/**").permitAll()
                 .anyRequest().authenticated()
             );
 
