@@ -32,7 +32,7 @@ public class LLMClient {
     public Mono<RoutineResponseDto> getRoutine(RoutineRequestDto requestDto) {
         return webClient
                 .post()
-                .uri(llmApiUrl + "/routine")
+                .uri(llmApiUrl + "/ask")
                 .bodyValue(requestDto)
                 .retrieve()
                 .bodyToMono(RoutineResponseDto.class);
