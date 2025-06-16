@@ -28,7 +28,7 @@ jobs:
           echo LLM_URL=${{ secrets.LLM_URL }} >> deploy/.env
 
       - name: Copy docker-compose.yml to deploy directory
-        run: cp ./capstone-project-be/docker-compose.yml deploy/
+        run: cp ./docker-compose.yml deploy/
 
       - name: Copy deploy files to EC2
         uses: appleboy/scp-action@master
@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           source: "./deploy/*"
-          target: "capstone/capstone-project-be"
+          target: "capstone/deploy"
 
   build-back:
     name: Build & Push Spring Boot (back)
@@ -123,9 +123,36 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  build-ai-chatbot:
+    name: Build & Push AI Chatbot
+    runs-on: ubuntu-latest
+    needs: setup-env
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      - name: Dockerhub Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          
+      - name: Build and push docker image (ai-chatbot) to dockerhub
+        uses: docker/build-push-action@v6
+        with:
+          context: ./capstone-project-AI/chatbot
+          push: true
+          tags: ${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
   deploy:
     name: Deploy to EC2 via Docker Compose
-    needs: [setup-env, build-back, build-gateway]
+    needs: [setup-env, build-back, build-gateway, build-ai-chatbot]
     runs-on: ubuntu-latest
 
     steps:
@@ -143,5 +170,6 @@ jobs:
             
             sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-spring:latest
             sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-gateway:latest
-            sudo docker-compose -f ~/capstone/capstone-project-be/deploy/docker-compose.yml up -d --remove-orphans
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:latest
+            sudo docker-compose -f ~/capstone/deploy/docker-compose.yml up -d --remove-orphans
             sudo docker image prune -f
