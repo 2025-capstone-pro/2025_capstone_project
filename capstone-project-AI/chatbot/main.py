@@ -26,7 +26,7 @@ class QuestionRequest(BaseModel):
     top_p: float = 0.9
 
 class AnswerResponse(BaseModel):
-    ResponseText: str
+    answer: str
 
 class HealthResponse(BaseModel):
     status: str
