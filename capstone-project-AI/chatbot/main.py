@@ -20,14 +20,13 @@ tokenizer = None
 
 # 요청/응답 모델 정의
 class QuestionRequest(BaseModel):
-    question: str
+    promptText: str
     max_length: int = 256
     temperature: float = 0.7
     top_p: float = 0.9
 
 class AnswerResponse(BaseModel):
-    answer: str
-    question: str
+    ResponseText: str
 
 class HealthResponse(BaseModel):
     status: str
@@ -189,8 +188,7 @@ async def ask_question(request: QuestionRequest):
         )
         
         return AnswerResponse(
-            answer=answer,
-            question=request.question
+            answer=answer
         )
         
     except HTTPException:

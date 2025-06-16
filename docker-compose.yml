@@ -43,8 +43,25 @@ services:
     networks:
       - backend_network
 
+  ai-chatbot:
+    container_name: ai-chatbot
+    image: ${DOCKER_REPO}/2025-capstone-ai-chatbot:latest
+    ports:
+      - "8082:8082"
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+    environment:
+      - HUGGINGFACE_HUB_CACHE=/root/.cache/huggingface
+    networks:
+      - capstone-network
+
+volumes:
+  huggingface_cache:
+
 networks:
   gateway_network:
     driver: bridge
   backend_network:
+    driver: bridge
+  capstone-network:
     driver: bridge
