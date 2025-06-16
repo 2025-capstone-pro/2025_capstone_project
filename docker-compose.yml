@@ -53,7 +53,7 @@ services:
     environment:
       - HUGGINGFACE_HUB_CACHE=/root/.cache/huggingface
     networks:
-      - capstone-network
+      - backend_network
 
 volumes:
   huggingface_cache:
@@ -62,6 +62,4 @@ networks:
   gateway_network:
     driver: bridge
   backend_network:
-    driver: bridge
-  capstone-network:
     driver: bridge
