@@ -12,8 +12,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # pip 캐시 활용하여 패키지 설치
-RUN pip install --cache-dir=/tmp/pip-cache -r requirements.txt \
-    && rm -rf /tmp/pip-cache
+RUN --mount=type=cache,target=/root/.cache/pip pip install -r requirements.txt
 
 # 애플리케이션 코드 복사
 COPY . .
@@ -26,3 +25,4 @@ EXPOSE 8082
 
 # 애플리케이션 실행
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8082"]
+
