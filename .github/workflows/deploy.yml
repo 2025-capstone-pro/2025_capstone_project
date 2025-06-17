@@ -169,13 +169,14 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
           script: |
-            if [ "$(sudo docker ps -qa)" ]; then
-              sudo docker rm -f $(sudo docker ps -qa)
-            
-            fi
-            
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-spring:latest
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-gateway:latest
-            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:latest
-            sudo docker-compose -f ~/capstone/deploy/docker-compose.yml up -d --remove-orphans
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-spring:latest &
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-gateway:latest &
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/2025-capstone-ai-chatbot:latest &
+            wait
+
+            cd ~/capstone/deploy
+            sudo docker-compose down --remove-orphans || true
+                                 
+            sudo docker-compose up -d --remove-orphans
+
             sudo docker image prune -f
