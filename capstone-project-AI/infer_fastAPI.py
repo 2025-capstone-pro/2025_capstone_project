@@ -1,15 +1,15 @@
-import os
-import shutil
 import numpy as np
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from keras.models import load_model
 from keras.metrics import MeanSquaredError
-from util import extract_video_features  # 사용자 정의 함수
+from typing import Dict, Any
+import json
+from util_infer import parse_landmarks_json, extract_features_from_landmarks  # (N, 33, 3) 파싱 함수
 
 app = FastAPI()
 
-# 모델 로드 (서버 시작 시 한 번만 수행)
+# 모델 로드
 MODEL_PATH = "autoencoder_model.h5"
 try:
     autoencoder = load_model(MODEL_PATH, custom_objects={'mse': MeanSquaredError()})
@@ -19,21 +19,17 @@ except Exception as e:
     autoencoder = None
 
 @app.post("/detect-anomaly/")
-async def detect_anomaly(file: UploadFile = File(...)):
+async def detect_anomaly(request: Request):
     if autoencoder is None:
         raise HTTPException(status_code=500, detail="모델이 로드되지 않았습니다.")
 
-    # 1) 업로드된 파일을 임시 디렉토리에 저장
-    temp_video_path = f"temp_{file.filename}"
     try:
-        with open(temp_video_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"파일 저장 실패: {e}")
+        # 1) JSON 요청 데이터 파싱
+        json_data: Dict[str, Any] = await request.json()
 
-    try:
-        # 2) 특징 추출
-        dyn_feats = extract_video_features(temp_video_path)
+        # 2) parse_landmarks_json 함수 호출 (사전형 데이터 바로 넘기기)
+        landmark_array: np.ndarray = parse_landmarks_json(json_data)
+        dyn_feats = extract_features_from_landmarks(landmark_array)
         if dyn_feats is None or dyn_feats.size == 0:
             raise HTTPException(status_code=400, detail="비디오에서 특징을 추출할 수 없습니다.")
 
@@ -57,10 +53,6 @@ async def detect_anomaly(file: UploadFile = File(...)):
         }
         return JSONResponse(content=result)
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"처리 중 오류 발생: {e}")
 
-    finally:
-        # 5) 임시 파일 삭제
-        if os.path.exists(temp_video_path):
-            os.remove(temp_video_path)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"요청 처리 실패: {str(e)}")
