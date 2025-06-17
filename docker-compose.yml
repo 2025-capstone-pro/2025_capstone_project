@@ -55,6 +55,14 @@ services:
     networks:
       - backend_network
 
+  ai-detection:
+    container_name: ai-detection
+    image: rudah78/2025-capstone-ai-detection:latest
+    ports:
+      - "8081:8081"
+    networks:
+      - backend_network
+
 volumes:
   huggingface_cache:
 
