@@ -6,7 +6,7 @@ import com.samdaejjang.backend.entity.Users;
 import com.samdaejjang.backend.repository.UsersRepository;
 import com.samdaejjang.backend.repository.VideoRepository;
 import com.samdaejjang.backend.service.VideoService;
-import com.samdaejjang.backend.service.LLMService;
+import com.samdaejjang.backend.service.AnomalyService;
 import com.samdaejjang.backend.service.S3Service;
 import com.samdaejjang.backend.utils.ErrorResponse;
 import com.samdaejjang.backend.utils.SuccessResponse;
@@ -23,7 +23,6 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ import java.util.UUID;
 public class VideoController {
 
     private final VideoService videoService;
-    private final LLMService LLMService;
+    private final AnomalyService anomalyService;
     private final S3Service s3Service;
     private final UsersRepository usersRepository;
     private final VideoRepository videoRepository;
@@ -42,7 +41,7 @@ public class VideoController {
     @PostMapping("feedback")
     public Mono<?> startFeedback(@RequestBody FrameDataRequest request) {
 
-        return LLMService.generateFeedback(request)
+        return anomalyService.generateFeedback(request)
                 .<ResponseEntity<?>>map(feedback ->
                         ResponseEntity.ok(new SuccessResponse<>(feedback)))
                 .onErrorResume(e -> {

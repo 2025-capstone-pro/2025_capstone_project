@@ -18,7 +18,7 @@ except Exception as e:
     print(f"[FastAPI] 모델 로드 실패: {e}")
     autoencoder = None
 
-@app.post("/detect-anomaly/")
+@app.post("/detect-anomaly")
 async def detect_anomaly(request: Request):
     if autoencoder is None:
         raise HTTPException(status_code=500, detail="모델이 로드되지 않았습니다.")
@@ -31,7 +31,7 @@ async def detect_anomaly(request: Request):
         landmark_array: np.ndarray = parse_landmarks_json(json_data)
         dyn_feats = extract_features_from_landmarks(landmark_array)
         if dyn_feats is None or dyn_feats.size == 0:
-            raise HTTPException(status_code=400, detail="비디오에서 특징을 추출할 수 없습니다.")
+            raise HTTPException(status_code=400, detail="특징을 추출할 수 없습니다.")
 
         # 3) 오토인코더로 이상치 탐지
         reconstructions = autoencoder.predict(dyn_feats)
@@ -40,19 +40,13 @@ async def detect_anomaly(request: Request):
         threshold = np.percentile(reconstruction_error, 95)  # 상위 5% 이상치
         anomalies = reconstruction_error > threshold
 
-        n_reps = len(dyn_feats)
         n_outliers = int(np.sum(anomalies))
-        outlier_ratio = float(n_outliers / n_reps)
-
+        
         # 4) 결과 반환
-        result = {
-            "total_reps": n_reps,
-            "anomalies_detected": n_outliers,
-            "anomaly_ratio": round(outlier_ratio, 4),
-            "anomaly_detected": n_outliers > 0
-        }
-        return JSONResponse(content=result)
-
+        if n_outliers > 0:
+            return JSONResponse(content={"anomalyResponseText": "어깨에 이상이 생겼습니다."})
+        else:
+            return JSONResponse(content={"anomalyResponseText": "운동 중 이상이 없습니다."})
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"요청 처리 실패: {str(e)}")

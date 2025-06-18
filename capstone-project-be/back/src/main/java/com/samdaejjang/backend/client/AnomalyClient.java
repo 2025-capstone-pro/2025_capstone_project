@@ -20,7 +20,7 @@ public class AnomalyClient {
 
     public Mono<AnomalyResponse> getAnomalies(FrameDataRequest request) {
         return webClient.post()
-                .uri(anomalyApiUrl + "/analyze")
+                .uri(anomalyApiUrl + "/detect-anomaly")
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(AnomalyResponse.class);
