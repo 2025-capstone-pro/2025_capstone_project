@@ -26,12 +26,27 @@ async def detect_anomaly(request: Request):
     try:
         # 1) JSON 요청 데이터 파싱
         json_data: Dict[str, Any] = await request.json()
-
-        # 2) parse_landmarks_json 함수 호출 (사전형 데이터 바로 넘기기)
+        print(f"[DEBUG] 받은 JSON 키들: {json_data.keys()}")
+        print(f"[DEBUG] frames 길이: {len(json_data.get('frames', []))}")
+        
+        # 첫 번째 프레임 구조 확인
+        if 'frames' in json_data and len(json_data['frames']) > 0:
+            first_frame = json_data['frames'][0]
+            print(f"[DEBUG] 첫 번째 프레임 키들: {first_frame.keys()}")
+            print(f"[DEBUG] landmarks 길이: {len(first_frame.get('landmarks', []))}")
+        
+        # 2) parse_landmarks_json 함수 호출
+        print("[DEBUG] parse_landmarks_json 호출 시작")
         landmark_array: np.ndarray = parse_landmarks_json(json_data)
+        print(f"[DEBUG] landmark_array 형태: {landmark_array.shape}")
+        
+        print("[DEBUG] extract_features_from_landmarks 호출 시작")
         dyn_feats = extract_features_from_landmarks(landmark_array)
+        
         if dyn_feats is None or dyn_feats.size == 0:
             raise HTTPException(status_code=400, detail="특징을 추출할 수 없습니다.")
+
+        print(f"[DEBUG] dyn_feats 형태: {dyn_feats.shape}")
 
         # 3) 오토인코더로 이상치 탐지
         reconstructions = autoencoder.predict(dyn_feats)
