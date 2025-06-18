@@ -1,7 +1,6 @@
 package com.samdaejjang.backend.controller;
 
-import com.samdaejjang.backend.dto.RoutineResponseDto;
-import com.samdaejjang.backend.service.LLMService;
+import com.samdaejjang.backend.service.RoutineService;
 import com.samdaejjang.backend.utils.ErrorResponse;
 import com.samdaejjang.backend.utils.SuccessResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +14,12 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/routine")
 public class RoutineController {
 
-    private final LLMService llmService;
+    private final RoutineService routineService;
 
     @PostMapping("/request")
     public Mono<?> recommand(@RequestBody String promptText) {
 
-        return llmService.generateRoutine(promptText)
+        return routineService.generateRoutine(promptText)
                 .<ResponseEntity<?>>map(routine ->
                         ResponseEntity.ok(new SuccessResponse<>(routine)))
                 .onErrorResume(e -> {
