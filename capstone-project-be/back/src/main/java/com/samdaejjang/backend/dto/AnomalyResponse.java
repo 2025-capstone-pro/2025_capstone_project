@@ -6,5 +6,5 @@ import java.util.List;
 
 @Data
 public class AnomalyResponse {
-    private String anomalyResponseText;
+    private List<FrameFeedback> feedbackList;
 }

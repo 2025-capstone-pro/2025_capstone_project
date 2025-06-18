@@ -26,8 +26,8 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/video")
-public class VideoController {
+@RequestMapping("/api/videos")
+public class VideosController {
 
     private final VideoService videoService;
     private final AnomalyService anomalyService;
@@ -53,9 +53,9 @@ public class VideoController {
     }
 
     /**
-     * 프론트로부터 Presigned URL 요청받는 엔드포인트
+     * 프론트로부터 Presigned URL(PUT)요청받는 엔드포인트
      */
-    @GetMapping("/presigned-url")
+    @GetMapping("/presigned-url/upload")
     public ResponseEntity<?> presignedUrl(@RequestHeader("X-User-Id") String userId,
                                           @RequestParam String fileName) {
 
@@ -77,7 +77,7 @@ public class VideoController {
 
             ExerciseVideo saved = videoRepository.save(exerciseVideo);
 
-            Map<String, ?> response = Map.of("presignedUrl", presignedUrl, "videoId", saved.getVideoId());
+            Map<String, ?> response = Map.of("presignedUrl", presignedUrl, "video_id", saved.getVideoId());
 
             return ResponseEntity.ok(new SuccessResponse<>(response));
 
@@ -87,7 +87,10 @@ public class VideoController {
         }
     }
 
-    @GetMapping("/presigned-url/view")
+    /**
+     * 프론트로부터 Presigned URL(GET)요청받는 엔드포인트
+     */
+    @GetMapping("/presigned-url/download")
     public ResponseEntity<?> getPresignedGetUrl(@RequestHeader("X-User-Id") String userId,
                                                 @RequestParam Long videoId) {
         try {
@@ -120,7 +123,6 @@ public class VideoController {
                     .body(new ErrorResponse(e.getMessage()));
         }
     }
-
 
     /**
      * 피드백 정보를 DB에 저장하는 요청
@@ -167,8 +169,8 @@ public class VideoController {
     /**
      * 특정 영상에 대한 피드백 정보를 요청받는 엔드포인트
      */
-    @GetMapping("/{videoId}")
-    public ResponseEntity<?> getVideoDetail(@PathVariable("videoId") Long videoId) {
+    @GetMapping("/{video-id}")
+    public ResponseEntity<?> getVideoDetail(@PathVariable("video-id") Long videoId) {
 
         try {
             VideoFeedbackDetailDto response = videoService.getVideoDetails(videoId);

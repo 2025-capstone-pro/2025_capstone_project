@@ -26,7 +26,7 @@ public class ExerciseVideo {
     @Column(name = "s3_key", nullable = false)
     private String s3Key;
 
-    @Column(name = "recorded_at", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime recordedAt;
+    private LocalDateTime createdAt;
 }

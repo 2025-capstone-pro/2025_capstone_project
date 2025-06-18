@@ -69,7 +69,7 @@ public class VideoService {
                 .map(video -> new VideoSummaryDto(
                         video.getVideoId(),
                         video.getS3Key(),
-                        video.getRecordedAt()
+                        video.getCreatedAt()
                 ))
                 .toList();
     }
@@ -96,7 +96,7 @@ public class VideoService {
         return new VideoFeedbackDetailDto(
                 video.getVideoId(),
                 video.getS3Key(),
-                video.getRecordedAt(),
+                video.getCreatedAt(),
                 feedbacks
         );
     }
