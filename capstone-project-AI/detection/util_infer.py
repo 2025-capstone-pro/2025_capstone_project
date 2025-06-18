@@ -63,9 +63,8 @@ def adjust_landmarks_to_hip_center(landmarks, scale_factor=1000):
 
 # ───────────────────────────────────────────────────────────────────────────────
 # --- 3) 랜드마크 JSON 파싱 함수 --------------------------------------------------
-def parse_landmarks_json(json_path):
-    with open(json_path, 'r') as f:
-        data = json.load(f)
+def parse_landmarks_json(data):
+    """딕셔너리 형태의 landmarks 데이터를 파싱"""
 
     frames = data.get("frames", [])
     if not frames:
