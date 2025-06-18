@@ -14,7 +14,7 @@ public class FrameDataRequest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class FrameDto {
+    public static class FrameDto {
         private Long frameIndex;
         private Long timestamp;
         private List<LandmarkDto> landmarks;
@@ -23,7 +23,7 @@ public class FrameDataRequest {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public class LandmarkDto {
+    public static class LandmarkDto {
         private float x;
         private float y;
         private float z;
