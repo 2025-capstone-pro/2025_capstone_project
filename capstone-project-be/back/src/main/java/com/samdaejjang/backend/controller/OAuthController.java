@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/oauth")
 @RequiredArgsConstructor
 public class OAuthController {
 

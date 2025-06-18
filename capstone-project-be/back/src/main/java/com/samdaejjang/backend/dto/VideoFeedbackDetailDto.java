@@ -13,6 +13,6 @@ import java.util.List;
 public class VideoFeedbackDetailDto {
     private Long videoId;
     private String s3Key;
-    private LocalDateTime analyzedAt;
+    private LocalDateTime createdAt;
     private List<FrameFeedbackDetailDto> feedbackList;
 }

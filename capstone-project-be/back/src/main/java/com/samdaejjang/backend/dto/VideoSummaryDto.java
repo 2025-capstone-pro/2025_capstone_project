@@ -11,5 +11,5 @@ public class VideoSummaryDto {
 
     private Long videoId;
     private String s3Key;
-    private LocalDateTime analyzedAt;
+    private LocalDateTime createdAt;
 }

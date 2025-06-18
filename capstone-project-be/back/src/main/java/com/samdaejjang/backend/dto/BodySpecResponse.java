@@ -9,6 +9,5 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 public class BodySpecResponse {
 
-    @JsonProperty("body_spec_id")
     private Long bodySpecId;
 }
