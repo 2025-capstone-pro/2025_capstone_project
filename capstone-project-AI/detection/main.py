@@ -50,9 +50,29 @@ async def detect_anomaly(request: Request):
         
         # 4) 결과 반환
         if n_outliers > 0:
-            return JSONResponse(content={"anomalyResponseText": "어깨에 이상이 생겼습니다."})
+            response = {
+                "feedbackList": [
+                {
+                    "frame": 12,
+                    "text": "왼쪽 무릎이 과도하게 굽혀졌습니다."
+                },
+                {
+                    "frame": 30,
+                    "text": "오른쪽 엉덩이가 흔들립니다."
+                }
+                ]
+            }
         else:
-            return JSONResponse(content={"anomalyResponseText": "운동 중 이상이 없습니다."})
+            response = {
+                "feedbackList": [
+                {
+                    "frame": 0,
+                    "text": "이상이 없습니다."
+                }
+                ]
+            }
+        return JSONResponse(content=response)
+
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"요청 처리 실패: {str(e)}")
