@@ -1,0 +1,73 @@
+## Production Deploy Version
+
+version: '3'
+
+services:
+  gateway:
+    container_name: gateway
+    restart: always
+    image: rudah78/2025-capstone-gateway:latest
+    env_file:
+      - .env
+    environment:
+      TZ: "Asia/Seoul"
+    ports:
+      - "6060:6060"
+    networks:
+      - gateway_network
+      - backend_network
+
+  back:
+    container_name: back
+    restart: always
+    image: rudah78/2025-capstone-spring:latest
+    env_file:
+      - .env
+    environment:
+      SPRING_DATASOURCE_URL: ${DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DATASOURCE_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXP: ${JWT_EXP}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME}
+      ANOMALY_URL: ${ANOMALY_URL}
+      LLM_URL: ${LLM_URL}
+    ports:
+    - "8080:8080"
+    volumes:
+      - /path/to/logs:/container/path/to/logs
+    networks:
+      - backend_network
+
+  ai-chatbot:
+    container_name: ai-chatbot
+    image: rudah78/2025-capstone-ai-chatbot:latest
+    ports:
+      - "8082:8082"
+    volumes:
+      - huggingface_cache:/root/.cache/huggingface
+    environment:
+      - HUGGINGFACE_HUB_CACHE=/root/.cache/huggingface
+    networks:
+      - backend_network
+
+  ai-detection:
+    container_name: ai-detection
+    image: rudah78/2025-capstone-ai-detection:latest
+    ports:
+      - "8081:8081"
+    networks:
+      - backend_network
+
+volumes:
+  huggingface_cache:
+
+networks:
+  gateway_network:
+    driver: bridge
+  backend_network:
+    driver: bridge
